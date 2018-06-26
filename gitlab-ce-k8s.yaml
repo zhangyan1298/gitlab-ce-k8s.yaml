@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: gitlab-ce
+ labels:
+  app: gitlab-ce
+spec:
+ replicas: 1
+ selector:
+  matchLabels:
+   app: gitlab-ce
+  matchExpressions:
+   - {key: app,operator: In,values: [gitlab-ce]}
+ template:
+  metadata:
+   labels:
+    app: gitlab-ce
+  spec:
+   containers:
+   - name: gitlab-ce
+     image: gitlab/gitlab-ce
+     imagePullPolicy: IfNotPresent
+     env:
+     - name: GITLAB_OMNIBUS_CONFIG
+       value: "external_url 'http://ingress.vicp.io/'; gitlab_rails['lfs_enabled'] = true;"
+     resources:
+      limits:
+       cpu: "1"
+       memory: "1.1Gi"
+      requests:
+       cpu: "0.9"
+       memory: "1Gi"
+     ports:
+     - name: ssl
+       containerPort: 443
+       name: yewu
+       containerPort: 80
+       name: ssh
+       containerPort: 22
+     volumeMounts:
+     - mountPath: /etc/gitlab
+       name: mypd
+     volumeMounts:
+     - mountPath: /var/log/gitlab
+       name: mypd
+     volumeMounts:
+     - mountPath: /var/opt/gitlab
+       name: mypd
+   volumes:
+   - name: mypd
+     persistentVolumeClaim:
+      claimName: myclaim
