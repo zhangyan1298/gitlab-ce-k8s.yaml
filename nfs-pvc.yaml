@@ -1,0 +1,17 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: myclaim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: slow
+  selector:
+    matchLabels:
+      nfs: "server005"
+    matchExpressions:
+      - {key: nfs, operator: In, values: [server005]}
