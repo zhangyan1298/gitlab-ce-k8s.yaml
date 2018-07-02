@@ -16,6 +16,13 @@ spec:
    labels:
     app: gitlab-ce
   spec:
+   tolerations:
+    - effect: NoSchedule
+      key: name
+      operator: Equal
+      value: huang
+   nodeSelector:
+    class: node005
    containers:
    - name: gitlab-ce
      image: gitlab/gitlab-ce
@@ -25,11 +32,11 @@ spec:
        value: "external_url 'http://ingress.vicp.io/'; gitlab_rails['lfs_enabled'] = true;"
      resources:
       limits:
-       cpu: "1.5"
-       memory: "2Gi"
+       cpu: "1.3"
+       memory: "2.5Gi"
       requests:
-       cpu: "1.1"
-       memory: "1.5Gi"
+       cpu: "1"
+       memory: "2.2Gi"
      ports:
      - name: ssl
        containerPort: 443
@@ -39,14 +46,16 @@ spec:
        containerPort: 22
      volumeMounts:
      - mountPath: /etc/gitlab
-       name: mypd
-     volumeMounts:
+       name: gitlabconfig
      - mountPath: /var/log/gitlab
        name: mypd
-     volumeMounts:
      - mountPath: /var/opt/gitlab
        name: mypd
    volumes:
    - name: mypd
      persistentVolumeClaim:
       claimName: myclaim
+   - name: gitlabconfig
+     hostPath:
+      path: "/mnt/nfs"
+
