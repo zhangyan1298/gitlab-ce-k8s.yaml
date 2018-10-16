@@ -30,9 +30,9 @@ spec:
      ports:
      - name: ssl
        containerPort: 443
-       name: yewu
+     - name: yewu
        containerPort: 80
-       name: ssh
+     - name: ssh
        containerPort: 22
      volumeMounts:
      - name: gitlabdata
