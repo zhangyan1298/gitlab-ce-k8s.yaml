@@ -5,6 +5,8 @@ metadata:
  labels:
    apps: gitlab-ee
 spec:
+ nodeSelector:
+  classtype: production-1
  replicas: 1
  selector:
   matchLabels:
