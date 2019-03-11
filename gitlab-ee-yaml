@@ -5,8 +5,8 @@ metadata:
  labels:
    apps: gitlab-ee
 spec:
- nodeSelector:
-  classtype: production-1
+# nodeSelector:
+#  classtype: node-2
  replicas: 1
  selector:
   matchLabels:
@@ -17,6 +17,24 @@ spec:
    labels:
     apps: gitlab-ee
   spec:
+   affinity:
+     nodeAffinity:
+       requiredDuringSchedulingIgnoredDuringExecution:
+         nodeSelectorTerms:
+         - matchExpressions:
+           - key: kubernetes.io/hostname
+             operator: In
+             values:
+             - 10.136.129.235
+             - 10.136.62.215 
+       preferredDuringSchedulingIgnoredDuringExecution:
+       - weight: 1
+         preference:
+           matchExpressions:
+           - key: classtype
+             operator: In
+             values:
+             - node-3
    tolerations:
    - key: "key"
      operator: "Equal"
@@ -28,7 +46,7 @@ spec:
      imagePullPolicy: IfNotPresent
      env:
      - name: GITLAB_OMNIBUS_CONFIG
-       value: "external_url 'http://ingress.vicp.io/'; gitlab_rails['lfs_enabled'] = true;"
+       value: "external_url 'http://git.cloud-technology.online/'; gitlab_rails['lfs_enabled'] = true;"
      ports:
      - name: ssl
        containerPort: 443
@@ -46,14 +64,22 @@ spec:
      - name: gitlabdata
        mountPath: /var/log/gitlab
        subPath: gitlablog
- volumeClaimTemplates:
- - metadata:
-    name: gitlabdata
-   spec:
-    accessModes: [ "ReadWriteOnce" ]
-    storageClassName: "standard"
-    resources:
-      requests:
-        storage: 10Gi
+   volumes:
+   - name: gitlabdata
+     cephfs:
+       monitors:
+       - 10.136.16.83:6789
+       user: admin
+       secretRef:
+         name: ceph-auth  
+# volumeClaimTemplates:
+# - metadata:
+#    name: gitlabdata
+#   spec:
+#    accessModes: [ "ReadWriteOnce" ]
+#    storageClassName: "standard"
+#    resources:
+#      requests:
+#        storage: 10Gi
    
   
