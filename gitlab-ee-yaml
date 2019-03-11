@@ -16,6 +16,7 @@ spec:
   metadata:
    labels:
     apps: gitlab-ee
+#node亲和性规则，硬要求符合required的值，并且优先匹配preferred的值，混合使用，两者也可以单独使用
   spec:
    affinity:
      nodeAffinity:
@@ -64,6 +65,7 @@ spec:
      - name: gitlabdata
        mountPath: /var/log/gitlab
        subPath: gitlablog
+#增加cephfs卷挂载使用，支持多pod readonly ，单pod readwriteonce
    volumes:
    - name: gitlabdata
      cephfs:
